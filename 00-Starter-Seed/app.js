@@ -33,3 +33,8 @@ document.getElementById('btn-login').addEventListener('click', function () {
 document.getElementById('btn-api').addEventListener('click', function () {
     // Just call your API here. The header will be sent
 });
+
+document.getElementById('btn-logout').addEventListener('click', function () {
+    localStorage.removeItem('userToken');
+    window.location = location.href;
+});
