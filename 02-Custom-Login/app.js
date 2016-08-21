@@ -1,6 +1,5 @@
 window.addEventListener('load', function() {
-  var AUTH0_CLIENT_ID = '';
-  var AUTH0_DOMAIN = '';
+
   var auth0 = new Auth0({
     domain: AUTH0_DOMAIN,
     clientID: AUTH0_CLIENT_ID,
