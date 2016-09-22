@@ -1,2 +1,2 @@
-# auth0-javascript-spa
+# Auth0 Vanilla
 Auth0 Vanilla examples
