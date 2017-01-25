@@ -1,25 +1,27 @@
 window.addEventListener('load', function() {
 
-  var auth0 = new Auth0({
+  var auth = new auth0.WebAuth({
     domain: AUTH0_DOMAIN,
     clientID: AUTH0_CLIENT_ID,
-    callbackOnLocationHash: true,
-    callbackURL: 'http://YOUR_APP/callback',
+    redirectUri: 'http://localhost:8080',
+    responseType: 'token id_token'
   });
 
   document.getElementById('btn-login').addEventListener('click', function() {
     var username = document.getElementById('username').value;
     var password = document.getElementById('password').value;
-    auth0.login({
-      connection: 'Username-Password-Authentication',
-      responseType: 'token',
-      email: username,
+    auth.client.login({
+      realm: 'Username-Password-Authentication',
+      username: username,
       password: password,
-    }, function(err) {
+    }, function(err, authResult) {
       if (err) {
         alert("something went wrong: " + err.message);
-      } else {
-        show_logged_in(username);
+        return
+      }
+      if (authResult && authResult.idToken && authResult.accessToken) {
+        setUser(authResult);
+        show_logged_in();
       }
     });
   });
@@ -27,9 +29,8 @@ window.addEventListener('load', function() {
   document.getElementById('btn-register').addEventListener('click', function() {
     var username = document.getElementById('username').value;
     var password = document.getElementById('password').value;
-    auth0.signup({
+    auth.redirect.signupAndLogin({
       connection: 'Username-Password-Authentication',
-      responseType: 'token',
       email: username,
       password: password,
     }, function(err) {
@@ -38,43 +39,50 @@ window.addEventListener('load', function() {
   });
 
   document.getElementById('btn-google').addEventListener('click', function() {
-    auth0.login({
+    auth.authorize({
       connection: 'google-oauth2'
-    }, function(err) {
-      if (err) alert("something went wrong: " + err.message);
     });
   });
 
   document.getElementById('btn-logout').addEventListener('click', function() {
+     localStorage.removeItem('access_token');
      localStorage.removeItem('id_token');
      window.location.href = "/";
-  })
+  });
 
   var show_logged_in = function(username) {
     document.querySelector('form.form-signin').style.display = "none";
     document.querySelector('div.logged-in').style.display = "block";
-  };
+  }
 
   var show_sign_in = function() {
     document.querySelector('div.logged-in').style.display = "none";
     document.querySelector('form.form-signin').style.display = "block";
-  };
+  }
 
   var parseHash = function() {
     var token = localStorage.getItem('id_token');
     if (token) {
       show_logged_in();
     } else {
-      var result = auth0.parseHash(window.location.hash);
-      if (result && result.idToken) {
-        localStorage.setItem('id_token', result.idToken);
-        show_logged_in();
-      } else if (result && result.error) {
-        alert('error: ' + result.error);
-        show_sign_in();
-      }
+      auth.parseHash(function(err, authResult) {
+        if (authResult && authResult.accessToken && authResult.idToken) {
+          window.location.hash = '';
+          setUser(authResult);
+          show_logged_in();
+        } else if (authResult && authResult.error) {
+          alert('error: ' + authResult.error);
+          show_sign_in();
+        }
+      });
+      
     }
-  };
+  }
+
+  var setUser = function(authResult) {
+    localStorage.setItem('access_token', authResult.accessToken);
+    localStorage.setItem('id_token', authResult.idToken);
+  }
 
   parseHash();
 
