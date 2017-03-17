@@ -16,7 +16,7 @@ window.addEventListener('load', function() {
       password: password,
     }, function(err, authResult) {
       if (err) {
-        alert("something went wrong: " + err.message);
+        alert("something went wrong: " + err.description);
         return
       }
       if (authResult && authResult.idToken && authResult.accessToken) {
@@ -34,7 +34,7 @@ window.addEventListener('load', function() {
       email: username,
       password: password,
     }, function(err) {
-      if (err) alert("something went wrong: " + err.message);
+      if (err) alert("something went wrong: " + err.description);
     });
   });
 
@@ -65,7 +65,7 @@ window.addEventListener('load', function() {
     if (token) {
       show_logged_in();
     } else {
-      auth.parseHash(function(err, authResult) {
+      auth.parseHash({ _idTokenVerification: false }, function(err, authResult) {
         if (authResult && authResult.accessToken && authResult.idToken) {
           window.location.hash = '';
           setUser(authResult);
