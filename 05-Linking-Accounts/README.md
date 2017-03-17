@@ -14,129 +14,34 @@ In order to run the example you need to just start a server. What we suggest is 
 
 1. Install node
 2. run `npm install -g serve`
-3. run `serve` in the directory of the project.
+3. run `serve -p 3000` in the directory of the project.
 
-Go to `http://localhost:3000` and you'll see the app running :).
+Go to `http://localhost:3000` and you'll see the app running.
 
-# Important Snippets
+## What is Auth0?
 
-## 1. Add Lock dependency
+Auth0 helps you to:
 
-```html
-<!-- ===== ./index.html ===== -->
-<head>
-  ...
-  <!-- Auth0 Lock script -->
-  <script src="http://cdn.auth0.com/js/lock/10.1.0/lock.min.js"></script>
-  ...
-</head>
-```
+* Add authentication with [multiple authentication sources](https://docs.auth0.com/identityproviders), either social like **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce, among others**, or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS or any SAML Identity Provider**.
+* Add authentication through more traditional **[username/password databases](https://docs.auth0.com/mysql-connection-tutorial)**.
+* Add support for **[linking different user accounts](https://docs.auth0.com/link-accounts)** with the same user.
+* Support for generating signed [JSON Web Tokens](https://docs.auth0.com/jwt) to call your APIs and **flow the user identity** securely.
+* Analytics of how, when and where users are logging in.
+* Pull data from other sources and add it to the user profile, through [JavaScript rules](https://docs.auth0.com/rules).
 
-## 2. Create 2 Lock instances (one for linking login)
+## Create a free account in Auth0
 
-```javascript
-/* ===== ./app.js ===== */
-...
-var lock = new Auth0Lock(AUTH0_CLIENT_ID, AUTH0_DOMAIN);
+1. Go to [Auth0](https://auth0.com) and click Sign Up.
+2. Use Google, GitHub or Microsoft Account to login.
 
-// Lock instance to launch a login to obtain the secondary id_token
-var lockLink = new Auth0Lock(AUTH0_CLIENT_ID, AUTH0_DOMAIN, {
-  auth: {params: {state: "linking"}},
-  allowedConnections: ['Username-Password-Authentication', 'facebook', 'google-oauth2'],
-  languageDictionary: { // allows to override dictionary entries
-    title: "Link with:"
-  }
-});
-...
-```
+## Issue Reporting
 
-## 3. Check auth result state on authenticated callback
+If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
 
-```javascript
-/* ===== ./app.js ===== */
-...
-lock.on("authenticated", function(authResult) {
-  // Every lock instance listen to the same event, so we have to check if
-  // it's not the linking login here.
-  if (authResult.state != "linking") {
-    localStorage.setItem('id_token', authResult.idToken);
-    lock.getProfile(authResult.idToken, function(err, profile) {
-      if (err) {
-        return alert("There was an error getting the profile: " + err.message);
-      } else {
-        localStorage.setItem('profile', JSON.stringify(profile));
-        showUserIdentities(profile);
-        // Linking purposes only
-        localStorage.setItem('user_id', profile.user_id);
-        login_div.style.display = "none";
-        logged_div.style.display = "inline-block";
-      }
-    });
-  }
-});
+## Author
 
-lockLink.on("authenticated", function(authResult) {
-  // Every lock instance listen to the same event, so we have to check if
-  // it's not the linking login here.
-  if (authResult.state == "linking") {
-    // If it's the linking login, then do the link through the API.
-    linkAccount(authResult.idToken);
-  }
-});
-...
-```
+[Auth0](auth0.com)
 
-## 4. Link account
+## License
 
-```javascript
-/* ===== ./app.js ===== */
-...
-var linkAccount = function(id_token) {
-  // Get user_id value stored at login step
-  var user_id = localStorage.getItem('user_id');
-  var url = 'https://' + AUTH0_DOMAIN + '/api/v2/users/' + user_id + '/identities';
-  var data = JSON.stringify({ link_with: id_token });
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', url);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.setRequestHeader('Accept', 'application/json');
-  xhr.setRequestHeader('Authorization',
-                       'Bearer ' + localStorage.getItem('id_token'));
-  xhr.onload = function() {
-    if (xhr.status == 201) {
-      fetchProfile();
-    } else {
-      alert("Request failed: " + xhr.statusText);
-    }
-  };
-  xhr.send(data);
-};
-...
-```
-
-## 5. Unlink account
-
-```javascript
-/* ===== ./app.js ===== */
-...
-var unlinkAccount = function(identity) {
-  // Get user_id value stored at login step
-  var user_id = localStorage.getItem('user_id');
-  var url = 'https://' + AUTH0_DOMAIN + '/api/v2/users/' + user_id + '/identities/' + identity.provider + '/' + identity.user_id;
-  var xhr = new XMLHttpRequest();
-  xhr.open('DELETE', url);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.setRequestHeader('Accept', 'application/json');
-  xhr.setRequestHeader('Authorization',
-                       'Bearer ' + localStorage.getItem('id_token'));
-  xhr.onload = function() {
-    if (xhr.status == 200) {
-      fetchProfile();
-    } else {
-      alert("Request failed: " + xhr.statusText);
-    }
-  };
-  xhr.send();
-};
-...
-```
+This project is licensed under the MIT license. See the [LICENSE](LICENSE) file for more info.
