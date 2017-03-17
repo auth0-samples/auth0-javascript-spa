@@ -14,113 +14,35 @@ In order to run the example you need to just start a server. What we suggest is 
 
 1. Install node
 2. run `npm install -g serve`
-3. run `serve` in the directory of the project.
+3. run `serve -p 3000` in the directory of the project.
 
-Go to `http://localhost:3000` and you'll see the app running :).
+Go to `http://localhost:3000` and you'll see the app running.
 
 
-# Important Snippets
+## What is Auth0?
 
-## 1. Add Lock dependency
+Auth0 helps you to:
 
-```html
-<!-- ===== ./index.html ===== -->
-<head>
-  ...
-  <!-- Auth0 Lock script -->
-  <script src="http://cdn.auth0.com/js/lock/10.1.0/lock.min.js"></script>
-  ...
-</head>
-```
+* Add authentication with [multiple authentication sources](https://docs.auth0.com/identityproviders), either social like **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce, among others**, or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS or any SAML Identity Provider**.
+* Add authentication through more traditional **[username/password databases](https://docs.auth0.com/mysql-connection-tutorial)**.
+* Add support for **[linking different user accounts](https://docs.auth0.com/link-accounts)** with the same user.
+* Support for generating signed [JSON Web Tokens](https://docs.auth0.com/jwt) to call your APIs and **flow the user identity** securely.
+* Analytics of how, when and where users are logging in.
+* Pull data from other sources and add it to the user profile, through [JavaScript rules](https://docs.auth0.com/rules).
 
-## 2. Check if user's role is `admin` or `user`
+## Create a free account in Auth0
 
-```javascript
-/* ===== ./app.js ===== */
-...
-var isAdmin = function(profile) {
-  if (profile &&
-      profile.app_metadata &&
-      profile.app_metadata.roles &&
-      profile.app_metadata.roles.indexOf('admin') > -1) {
-    return true;
-  } else {
-     return false;
-  }
-};
+1. Go to [Auth0](https://auth0.com) and click Sign Up.
+2. Use Google, GitHub or Microsoft Account to login.
 
-var isUser = function(profile) {
-  if (profile &&
-      profile.app_metadata &&
-      profile.app_metadata.roles &&
-      profile.app_metadata.roles.indexOf('user') > -1) {
-    return true;
-  } else {
-     return false;
-  }
-};
-...
-```
+## Issue Reporting
 
-## 3. Filter access
+If you have found a bug or if you have a feature request, please report them at this repository issues section. Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/whitehat) details the procedure for disclosing security issues.
 
-```javascript
-/* ===== ./app.js ===== */
-...
-var route = function() {
-  var id_token = localStorage.getItem('id_token');
-  var current_location = window.location.pathname;
-  if (id_token) {
-    var profile = JSON.parse(localStorage.getItem('profile'));
+## Author
 
-    switch(current_location) {
-      case "/":
-        hide(document.getElementById('btn-login'));
-        show(document.getElementById('btn-logout'));
-        if (isAdmin(profile)) show(document.getElementById('btn-go-admin'));
-        if (isUser(profile)) show(document.getElementById('btn-go-user'));
-        break;
-      case "/user.html":
-        if (true != isUser(profile)) {
-          window.location.href = "/";
-        } else {
-          show(document.querySelector('.container'));
-          show(document.getElementById('btn-logout'));
-          document.getElementById('nickname').textContent = profile.nickname;
-        }
-        break;
-      case "/admin.html":
-        if (true != isAdmin(profile)) {
-          window.location.href = "/";
-        } else {
-          show(document.querySelector('.container'));
-          show(document.getElementById('btn-logout'));
-          document.getElementById('nickname').textContent = profile.nickname;
-        }
-        break;
-    };
-  } else { // user is not logged in.
-    // Call logout just to be sure our local session is cleaned up.
-    if ("/" != current_location) {
-      logout();
-    }
-  }
-};
+[Auth0](auth0.com)
 
-var logout = function() {
-  localStorage.removeItem('id_token');
-  localStorage.removeItem('profile');
-  window.location.href = "/";
-};
+## License
 
-var hide = function(element) {
-  element.style.display = "none";
-};
-
-var show = function(element) {
-  element.style.display = "inline-block";
-};
-
-route();
-...
-```
+This project is licensed under the MIT license. See the [LICENSE](LICENSE) file for more info.
