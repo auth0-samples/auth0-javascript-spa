@@ -3,7 +3,7 @@ window.addEventListener('load', function() {
   var auth = new auth0.WebAuth({
     domain: AUTH0_DOMAIN,
     clientID: AUTH0_CLIENT_ID,
-    redirectUri: 'http://localhost:8080',
+    redirectUri: 'http://localhost:3000',
     responseType: 'token id_token'
   });
 
