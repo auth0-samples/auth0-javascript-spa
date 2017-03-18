@@ -14,7 +14,7 @@ window.addEventListener('load', function() {
       connection: 'Username-Password-Authentication',
       username: username,
       password: password,
-    }, function(err, authResult) {
+    }, function(err) {
       if (err) return alert(err.description);
     });
   });
