@@ -1,5 +1,7 @@
 # Auth0 Vanilla JavaScript Samples
 
+These samples demonstrate how to implement user authentication in a JavaScript application using Auth0.
+
 ## What is Auth0?
 
 Auth0 helps you to:
