@@ -3,26 +3,19 @@ window.addEventListener('load', function() {
   var auth = new auth0.WebAuth({
     domain: AUTH0_DOMAIN,
     clientID: AUTH0_CLIENT_ID,
-    redirectUri: 'http://localhost:3000',
+    redirectUri: AUTH0_CALLBACK_URL,
     responseType: 'token id_token'
   });
 
   document.getElementById('btn-login').addEventListener('click', function() {
     var username = document.getElementById('username').value;
     var password = document.getElementById('password').value;
-    auth.client.login({
-      realm: 'Username-Password-Authentication',
+    auth.redirect.loginWithCredentials({
+      connection: 'Username-Password-Authentication',
       username: username,
       password: password,
     }, function(err, authResult) {
-      if (err) {
-        alert("something went wrong: " + err.description);
-        return
-      }
-      if (authResult && authResult.idToken && authResult.accessToken) {
-        setUser(authResult);
-        show_logged_in();
-      }
+      if (err) return alert(err.description);
     });
   });
 
@@ -34,7 +27,7 @@ window.addEventListener('load', function() {
       email: username,
       password: password,
     }, function(err) {
-      if (err) alert("something went wrong: " + err.description);
+      if (err) return alert(err.description);
     });
   });
 
