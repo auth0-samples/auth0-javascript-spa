@@ -14,7 +14,7 @@ In order to run the example you need to just start a server. What we suggest is 
 
 1. Install node
 2. run `npm install -g serve`
-3. run `serve` in the directory of the project.
+3. run `serve -p 3000` in the directory of the project.
 
 Go to `http://localhost:3000` and you'll see the app running.
 
