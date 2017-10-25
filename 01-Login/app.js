@@ -2,7 +2,7 @@ window.addEventListener('load', function() {
 
   var lock = new Auth0Lock(AUTH0_CLIENT_ID, AUTH0_DOMAIN);
 
-  // buttons
+  // buttons are over here
   var btn_login = document.getElementById('btn-login');
   var btn_logout = document.getElementById('btn-logout');
 
